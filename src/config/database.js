@@ -1,16 +1,22 @@
 import settings from './settings.js';
-import { Sequelize } from 'sequelize';
 
-const sequelize = new Sequelize(
-  settings.db.name,
-  settings.db.user,
-  settings.db.password,
-  {
+export default {
+  development: {
+    username: settings.db.user,
+    password: settings.db.password,
+    database: settings.db.name,
     host: settings.db.host,
     port: settings.db.port,
-    dialect: 'mysql',
+    dialect: "mysql",
     logging: false,
-  }
-);
-
-export default sequelize;
+  },
+  production: {
+    username: settings.db.user,
+    password: settings.db.password,
+    database: settings.db.name,
+    host: settings.db.host,
+    port: settings.db.port,
+    dialect: "mysql",
+    logging: false,
+  },
+};
