@@ -7,7 +7,7 @@ const morgan = require('morgan');
 const path = require('path');
 
 const router = require('./routes/index');
-const { errorHandler, notFoundHandler } = require('./middlewares/errorHandler');
+const { errorHandler, notFoundHandler } = require('./middlewares/errors/index');
 
 const app = express();
 

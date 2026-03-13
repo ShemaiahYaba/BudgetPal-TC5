@@ -1,45 +1,33 @@
 'use strict';
 
-require('dotenv').config();
+const settings = require('./settings');
 const { Sequelize } = require('sequelize');
 
-const config = {
-  development: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10) || 3306,
-    dialect: 'mysql',
-    logging: false,
-  },
-  test: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10) || 3306,
-    dialect: 'mysql',
-    logging: false,
-  },
-  production: {
-    username: process.env.DB_USER,
-    password: process.env.DB_PASSWORD || null,
-    database: process.env.DB_NAME,
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10) || 3306,
-    dialect: 'mysql',
-    logging: false,
-  },
+const dbConfig = {
+  username: settings.db.user,
+  password: settings.db.password,
+  database: settings.db.name,
+  host: settings.db.host,
+  port: settings.db.port,
+  dialect: 'mysql',
+  logging: false,
 };
 
+// sequelize-cli config (read by .sequelizerc via development/test/production keys)
+const config = {
+  development: dbConfig,
+  test: dbConfig,
+  production: dbConfig,
+};
+
+// Runtime Sequelize instance
 const sequelize = new Sequelize(
-  process.env.DB_NAME,
-  process.env.DB_USER,
-  process.env.DB_PASSWORD || null,
+  settings.db.name,
+  settings.db.user,
+  settings.db.password,
   {
-    host: process.env.DB_HOST,
-    port: parseInt(process.env.DB_PORT, 10) || 3306,
+    host: settings.db.host,
+    port: settings.db.port,
     dialect: 'mysql',
     logging: false,
   }
