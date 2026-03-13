@@ -5,7 +5,9 @@ import helmet from 'helmet';
 import cors from 'cors';
 import morgan from 'morgan';
 
+import swaggerUi from 'swagger-ui-express';
 import settings from './config/settings.js';
+import { swaggerSpec } from './config/swagger.js';
 import routes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middlewares/errors/index.js';
 import { startJobs } from './jobs/index.js';
@@ -28,6 +30,9 @@ app.use(express.urlencoded({ extended: true }));
 // Template engine
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, '..', 'views'));
+
+// Swagger UI
+app.use('/api/v1/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // API routes
 app.use('/api/v1', routes);

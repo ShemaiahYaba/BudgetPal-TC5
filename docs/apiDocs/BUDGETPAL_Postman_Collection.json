@@ -1,569 +1,376 @@
 {
   "info": {
     "name": "BudgetPal API",
-    "description": "Personal Finance Tracker API — Complete Collection\nCapstone 2026\n\nBase URL: http://localhost:5000/api/v1\n\nUsage:\n1. Run POST /auth/register or /auth/login first\n2. Token is auto-saved to {{token}}\n3. All protected requests use it automatically",
+    "_postman_id": "budgetpal-api-v1",
+    "description": "Personal Finance Tracker REST API — Capstone 2026\n\n## Setup\n1. Set `baseUrl` collection variable to `http://localhost:5001/api/v1`\n2. Register or Login — the `token` variable is captured automatically\n3. All protected requests use `{{token}}` via Bearer Auth",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "base_url", "value": "http://localhost:5000/api/v1", "type": "string" },
-    { "key": "token", "value": "", "type": "string" },
-    { "key": "category_id", "value": "", "type": "string" },
-    { "key": "transaction_id", "value": "", "type": "string" },
-    { "key": "budget_id", "value": "", "type": "string" }
+    { "key": "baseUrl", "value": "http://localhost:5001/api/v1", "type": "string" },
+    { "key": "token",   "value": "",                              "type": "string" }
   ],
   "auth": {
     "type": "bearer",
     "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }]
   },
   "item": [
-    {
-      "name": "Health",
-      "item": [
-        {
-          "name": "GET /health",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/health", "host": ["{{base_url}}"], "path": ["health"] }
-          }
-        }
-      ]
-    },
+
     {
       "name": "Auth",
       "item": [
         {
-          "name": "POST /auth/register",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.success && res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('token', res.data.token);",
-                  "}"
-                ]
-              }
-            }
-          ],
+          "name": "Register",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const res = pm.response.json();",
+            "if (res.success && res.data && res.data.token) {",
+            "  pm.collectionVariables.set('token', res.data.token);",
+            "  console.log('Token saved');",
+            "}"
+          ], "type": "text/javascript" } }],
           "request": {
-            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Shemaiah\",\n  \"email\": \"shemaiah@budgetpal.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/auth/register", "host": ["{{base_url}}"], "path": ["auth", "register"] },
-            "description": "Register a new user. Token is auto-saved. Welcome email sent."
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Alice Demo\",\n  \"email\": \"alice@demo.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
           }
         },
         {
-          "name": "POST /auth/login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.success && res.data && res.data.token) {",
-                  "  pm.collectionVariables.set('token', res.data.token);",
-                  "}"
-                ]
-              }
-            }
-          ],
+          "name": "Login",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const res = pm.response.json();",
+            "if (res.success && res.data && res.data.token) {",
+            "  pm.collectionVariables.set('token', res.data.token);",
+            "  console.log('Token saved');",
+            "}"
+          ], "type": "text/javascript" } }],
           "request": {
-            "auth": { "type": "noauth" },
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"user1@budgetpal.com\",\n  \"password\": \"Password123!\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
-            "description": "Login with seeded credentials. Token auto-saved."
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@demo.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
           }
         },
         {
-          "name": "POST /auth/login — Invalid",
+          "name": "Logout",
           "request": {
-            "auth": { "type": "noauth" },
             "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"nobody@budgetpal.com\",\n  \"password\": \"wrongpass\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/auth/login", "host": ["{{base_url}}"], "path": ["auth", "login"] },
-            "description": "Should return 401."
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
           }
         },
         {
-          "name": "GET /auth/me",
+          "name": "Forgot Password",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@demo.com\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/forgot-password", "host": ["{{baseUrl}}"], "path": ["auth", "forgot-password"] }
+          }
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"token\": \"<reset_token_from_email>\",\n  \"new_password\": \"newpassword123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/reset-password", "host": ["{{baseUrl}}"], "path": ["auth", "reset-password"] }
+          }
+        },
+        {
+          "name": "Get Me",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{base_url}}/auth/me", "host": ["{{base_url}}"], "path": ["auth", "me"] }
-          }
-        },
-        {
-          "name": "POST /auth/logout",
-          "request": {
-            "method": "POST",
-            "url": { "raw": "{{base_url}}/auth/logout", "host": ["{{base_url}}"], "path": ["auth", "logout"] }
-          }
-        },
-        {
-          "name": "POST /auth/forgot-password",
-          "request": {
-            "auth": { "type": "noauth" },
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"user1@budgetpal.com\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/auth/forgot-password", "host": ["{{base_url}}"], "path": ["auth", "forgot-password"] },
-            "description": "Sends reset link to email. Returns 200 even for unknown emails."
-          }
-        },
-        {
-          "name": "POST /auth/reset-password",
-          "request": {
-            "auth": { "type": "noauth" },
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"token\": \"paste_raw_token_from_email_here\",\n  \"password\": \"NewPassword123!\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/auth/reset-password", "host": ["{{base_url}}"], "path": ["auth", "reset-password"] },
-            "description": "Paste the raw token from the reset email. Updates password."
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
           }
         }
       ]
     },
+
     {
       "name": "Categories",
       "item": [
         {
-          "name": "GET /categories",
+          "name": "List Categories",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{base_url}}/categories", "host": ["{{base_url}}"], "path": ["categories"] }
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] }
           }
         },
         {
-          "name": "POST /categories — Expense",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.success && res.data && res.data.id) {",
-                  "  pm.collectionVariables.set('category_id', res.data.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
+          "name": "Create Category (expense)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Food\",\n  \"type\": \"expense\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/categories", "host": ["{{base_url}}"], "path": ["categories"] },
-            "description": "Create an expense category. ID auto-saved to {{category_id}}."
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Food\",\n  \"type\": \"expense\"\n}" },
+            "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] }
           }
         },
         {
-          "name": "POST /categories — Income",
+          "name": "Create Category (income)",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Salary\",\n  \"type\": \"income\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/categories", "host": ["{{base_url}}"], "path": ["categories"] }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Salary\",\n  \"type\": \"income\"\n}" },
+            "url": { "raw": "{{baseUrl}}/categories", "host": ["{{baseUrl}}"], "path": ["categories"] }
           }
         },
         {
-          "name": "GET /categories/:id",
+          "name": "Get Category",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{base_url}}/categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["categories", "{{category_id}}"] }
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/categories/:id", "host": ["{{baseUrl}}"], "path": ["categories", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         },
         {
-          "name": "PUT /categories/:id",
+          "name": "Update Category",
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"name\": \"Groceries\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["categories", "{{category_id}}"] }
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Groceries\",\n  \"type\": \"expense\"\n}" },
+            "url": { "raw": "{{baseUrl}}/categories/:id", "host": ["{{baseUrl}}"], "path": ["categories", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         },
         {
-          "name": "DELETE /categories/:id",
+          "name": "Delete Category",
           "request": {
             "method": "DELETE",
-            "url": { "raw": "{{base_url}}/categories/{{category_id}}", "host": ["{{base_url}}"], "path": ["categories", "{{category_id}}"] },
-            "description": "Fails with 409 if category has transactions."
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/categories/:id", "host": ["{{baseUrl}}"], "path": ["categories", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         }
       ]
     },
+
     {
       "name": "Transactions",
       "item": [
         {
-          "name": "GET /transactions — All",
+          "name": "List Transactions",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{base_url}}/transactions", "host": ["{{base_url}}"], "path": ["transactions"] }
-          }
-        },
-        {
-          "name": "GET /transactions — Filter by Type",
-          "request": {
-            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/transactions?type=expense",
-              "host": ["{{base_url}}"],
-              "path": ["transactions"],
-              "query": [{ "key": "type", "value": "expense" }]
-            }
-          }
-        },
-        {
-          "name": "GET /transactions — Filter by Month",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/transactions?month=3&year=2026",
-              "host": ["{{base_url}}"],
-              "path": ["transactions"],
-              "query": [{ "key": "month", "value": "3" }, { "key": "year", "value": "2026" }]
-            }
-          }
-        },
-        {
-          "name": "GET /transactions — Date Range",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/transactions?start_date=2026-01-01&end_date=2026-03-31",
-              "host": ["{{base_url}}"],
+              "raw": "{{baseUrl}}/transactions",
+              "host": ["{{baseUrl}}"],
               "path": ["transactions"],
               "query": [
-                { "key": "start_date", "value": "2026-01-01" },
-                { "key": "end_date", "value": "2026-03-31" }
+                { "key": "type",        "value": "",           "disabled": true },
+                { "key": "category_id", "value": "",           "disabled": true },
+                { "key": "start_date",  "value": "2026-01-01", "disabled": true },
+                { "key": "end_date",    "value": "2026-03-31", "disabled": true }
               ]
             }
           }
         },
         {
-          "name": "GET /transactions — Paginated",
+          "name": "Create Transaction (expense)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"category_id\": \"<category_uuid>\",\n  \"type\": \"expense\",\n  \"amount\": 150.00,\n  \"description\": \"Grocery shopping\",\n  \"date\": \"2026-03-06\"\n}" },
+            "url": { "raw": "{{baseUrl}}/transactions", "host": ["{{baseUrl}}"], "path": ["transactions"] }
+          }
+        },
+        {
+          "name": "Create Transaction (income)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"category_id\": \"<category_uuid>\",\n  \"type\": \"income\",\n  \"amount\": 4500.00,\n  \"description\": \"March salary\",\n  \"date\": \"2026-03-01\"\n}" },
+            "url": { "raw": "{{baseUrl}}/transactions", "host": ["{{baseUrl}}"], "path": ["transactions"] }
+          }
+        },
+        {
+          "name": "Get Transaction",
           "request": {
             "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/transactions?page=1&limit=10",
-              "host": ["{{base_url}}"],
-              "path": ["transactions"],
-              "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }]
-            }
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transactions/:id", "host": ["{{baseUrl}}"], "path": ["transactions", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         },
         {
-          "name": "POST /transactions — Expense",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.success && res.data && res.data.id) {",
-                  "  pm.collectionVariables.set('transaction_id', res.data.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type\": \"expense\",\n  \"amount\": 15000,\n  \"category_id\": \"{{category_id}}\",\n  \"description\": \"Grocery shopping\",\n  \"date\": \"2026-03-06\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/transactions", "host": ["{{base_url}}"], "path": ["transactions"] },
-            "description": "Creates expense. Triggers budget alert check. ID saved to {{transaction_id}}."
-          }
-        },
-        {
-          "name": "POST /transactions — Income",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type\": \"income\",\n  \"amount\": 250000,\n  \"category_id\": \"{{category_id}}\",\n  \"description\": \"Monthly salary\",\n  \"date\": \"2026-03-01\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/transactions", "host": ["{{base_url}}"], "path": ["transactions"] }
-          }
-        },
-        {
-          "name": "POST /transactions — Future Date (400)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"type\": \"expense\",\n  \"amount\": 5000,\n  \"category_id\": \"{{category_id}}\",\n  \"date\": \"2030-01-01\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/transactions", "host": ["{{base_url}}"], "path": ["transactions"] },
-            "description": "Should return 400 — future dates not allowed."
-          }
-        },
-        {
-          "name": "GET /transactions/:id",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/transactions/{{transaction_id}}", "host": ["{{base_url}}"], "path": ["transactions", "{{transaction_id}}"] }
-          }
-        },
-        {
-          "name": "PUT /transactions/:id",
+          "name": "Update Transaction",
           "request": {
             "method": "PUT",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"amount\": 18000,\n  \"description\": \"Updated grocery total\"\n}"
-            },
-            "url": { "raw": "{{base_url}}/transactions/{{transaction_id}}", "host": ["{{base_url}}"], "path": ["transactions", "{{transaction_id}}"] }
+            "body": { "mode": "raw", "raw": "{\n  \"category_id\": \"<category_uuid>\",\n  \"type\": \"expense\",\n  \"amount\": 200.00,\n  \"description\": \"Updated description\",\n  \"date\": \"2026-03-06\"\n}" },
+            "url": { "raw": "{{baseUrl}}/transactions/:id", "host": ["{{baseUrl}}"], "path": ["transactions", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         },
         {
-          "name": "DELETE /transactions/:id",
+          "name": "Delete Transaction",
           "request": {
             "method": "DELETE",
-            "url": { "raw": "{{base_url}}/transactions/{{transaction_id}}", "host": ["{{base_url}}"], "path": ["transactions", "{{transaction_id}}"] }
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/transactions/:id", "host": ["{{baseUrl}}"], "path": ["transactions", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         }
       ]
     },
+
     {
       "name": "Budgets",
       "item": [
         {
-          "name": "GET /budgets — All",
+          "name": "List Budgets",
           "request": {
             "method": "GET",
-            "url": { "raw": "{{base_url}}/budgets", "host": ["{{base_url}}"], "path": ["budgets"] },
-            "description": "Returns budgets with live spent + percent_used + status."
-          }
-        },
-        {
-          "name": "GET /budgets — Filter by Month",
-          "request": {
-            "method": "GET",
+            "header": [],
             "url": {
-              "raw": "{{base_url}}/budgets?month=3&year=2026",
-              "host": ["{{base_url}}"],
+              "raw": "{{baseUrl}}/budgets",
+              "host": ["{{baseUrl}}"],
               "path": ["budgets"],
-              "query": [{ "key": "month", "value": "3" }, { "key": "year", "value": "2026" }]
-            }
-          }
-        },
-        {
-          "name": "GET /budgets/status",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/budgets/status", "host": ["{{base_url}}"], "path": ["budgets", "status"] },
-            "description": "Current month budget overview. All categories with budgets + their spend status."
-          }
-        },
-        {
-          "name": "POST /budgets — Create",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "const res = pm.response.json();",
-                  "if (res.success && res.data && res.data.id) {",
-                  "  pm.collectionVariables.set('budget_id', res.data.id);",
-                  "}"
-                ]
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"category_id\": \"{{category_id}}\",\n  \"month\": 3,\n  \"year\": 2026,\n  \"limit_amount\": 50000\n}"
-            },
-            "url": { "raw": "{{base_url}}/budgets", "host": ["{{base_url}}"], "path": ["budgets"] },
-            "description": "Category must be type 'expense'. One budget per category per month."
-          }
-        },
-        {
-          "name": "POST /budgets — Duplicate (409)",
-          "request": {
-            "method": "POST",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"category_id\": \"{{category_id}}\",\n  \"month\": 3,\n  \"year\": 2026,\n  \"limit_amount\": 60000\n}"
-            },
-            "url": { "raw": "{{base_url}}/budgets", "host": ["{{base_url}}"], "path": ["budgets"] },
-            "description": "Should return 409 — budget already exists for this category/month."
-          }
-        },
-        {
-          "name": "GET /budgets/:id",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/budgets/{{budget_id}}", "host": ["{{base_url}}"], "path": ["budgets", "{{budget_id}}"] }
-          }
-        },
-        {
-          "name": "PUT /budgets/:id — Update Limit",
-          "request": {
-            "method": "PUT",
-            "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"limit_amount\": 60000\n}"
-            },
-            "url": { "raw": "{{base_url}}/budgets/{{budget_id}}", "host": ["{{base_url}}"], "path": ["budgets", "{{budget_id}}"] }
-          }
-        },
-        {
-          "name": "DELETE /budgets/:id",
-          "request": {
-            "method": "DELETE",
-            "url": { "raw": "{{base_url}}/budgets/{{budget_id}}", "host": ["{{base_url}}"], "path": ["budgets", "{{budget_id}}"] }
-          }
-        }
-      ]
-    },
-    {
-      "name": "Reports",
-      "item": [
-        {
-          "name": "GET /reports/summary — Current Month",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/reports/summary", "host": ["{{base_url}}"], "path": ["reports", "summary"] }
-          }
-        },
-        {
-          "name": "GET /reports/summary — Specific Month",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/reports/summary?month=2&year=2026",
-              "host": ["{{base_url}}"],
-              "path": ["reports", "summary"],
-              "query": [{ "key": "month", "value": "2" }, { "key": "year", "value": "2026" }]
-            }
-          }
-        },
-        {
-          "name": "GET /reports/by-category",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/reports/by-category", "host": ["{{base_url}}"], "path": ["reports", "by-category"] }
-          }
-        },
-        {
-          "name": "GET /reports/by-category — Expenses Only",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/reports/by-category?type=expense&month=3&year=2026",
-              "host": ["{{base_url}}"],
-              "path": ["reports", "by-category"],
               "query": [
-                { "key": "type", "value": "expense" },
-                { "key": "month", "value": "3" },
-                { "key": "year", "value": "2026" }
+                { "key": "month", "value": "3",    "disabled": true },
+                { "key": "year",  "value": "2026", "disabled": true }
               ]
             }
           }
         },
         {
-          "name": "GET /reports/monthly",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/reports/monthly", "host": ["{{base_url}}"], "path": ["reports", "monthly"] },
-            "description": "Month-by-month overview. Defaults to last 6 months."
-          }
-        },
-        {
-          "name": "GET /reports/monthly — By Year",
-          "request": {
-            "method": "GET",
-            "url": {
-              "raw": "{{base_url}}/reports/monthly?year=2026",
-              "host": ["{{base_url}}"],
-              "path": ["reports", "monthly"],
-              "query": [{ "key": "year", "value": "2026" }]
-            }
-          }
-        },
-        {
-          "name": "POST /reports/email",
+          "name": "Create Budget",
           "request": {
             "method": "POST",
             "header": [{ "key": "Content-Type", "value": "application/json" }],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"month\": 3,\n  \"year\": 2026\n}"
-            },
-            "url": { "raw": "{{base_url}}/reports/email", "host": ["{{base_url}}"], "path": ["reports", "email"] },
-            "description": "Sends the report to the authenticated user's email."
+            "body": { "mode": "raw", "raw": "{\n  \"category_id\": \"<expense_category_uuid>\",\n  \"month\": 3,\n  \"year\": 2026,\n  \"limit_amount\": 500.00\n}" },
+            "url": { "raw": "{{baseUrl}}/budgets", "host": ["{{baseUrl}}"], "path": ["budgets"] }
+          }
+        },
+        {
+          "name": "Current Month Status (all budgets)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/budgets/status", "host": ["{{baseUrl}}"], "path": ["budgets", "status"] }
+          }
+        },
+        {
+          "name": "Get Budget",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/budgets/:id", "host": ["{{baseUrl}}"], "path": ["budgets", ":id"], "variable": [{ "key": "id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Get Budget Status",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/budgets/:id/status", "host": ["{{baseUrl}}"], "path": ["budgets", ":id", "status"], "variable": [{ "key": "id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Update Budget",
+          "request": {
+            "method": "PUT",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"limit_amount\": 750.00\n}" },
+            "url": { "raw": "{{baseUrl}}/budgets/:id", "host": ["{{baseUrl}}"], "path": ["budgets", ":id"], "variable": [{ "key": "id", "value": "" }] }
+          }
+        },
+        {
+          "name": "Delete Budget",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/budgets/:id", "host": ["{{baseUrl}}"], "path": ["budgets", ":id"], "variable": [{ "key": "id", "value": "" }] }
           }
         }
       ]
     },
+
     {
-      "name": "Error Tests",
+      "name": "Reports",
       "item": [
         {
-          "name": "No Token — 401",
+          "name": "Summary (current month)",
           "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "summary"],
+              "query": [
+                { "key": "month",      "value": "3",    "disabled": true },
+                { "key": "year",       "value": "2026", "disabled": true },
+                { "key": "start_date", "value": "",     "disabled": true },
+                { "key": "end_date",   "value": "",     "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "By Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/by-category",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "by-category"],
+              "query": [
+                { "key": "month", "value": "3",       "disabled": true },
+                { "key": "year",  "value": "2026",    "disabled": true },
+                { "key": "type",  "value": "expense", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Monthly Trend (last 6 months)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/monthly",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "monthly"],
+              "query": [
+                { "key": "year", "value": "2026", "disabled": true }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Email Report",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/reports/email",
+              "host": ["{{baseUrl}}"],
+              "path": ["reports", "email"],
+              "query": [
+                { "key": "month", "value": "3",    "disabled": true },
+                { "key": "year",  "value": "2026", "disabled": true }
+              ]
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Health Check",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
             "auth": { "type": "noauth" },
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/transactions", "host": ["{{base_url}}"], "path": ["transactions"] }
-          }
-        },
-        {
-          "name": "Not Found — 404",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/transactions/00000000-0000-0000-0000-000000000000", "host": ["{{base_url}}"], "path": ["transactions", "00000000-0000-0000-0000-000000000000"] }
-          }
-        },
-        {
-          "name": "Unknown Route — 404",
-          "request": {
-            "method": "GET",
-            "url": { "raw": "{{base_url}}/this-does-not-exist", "host": ["{{base_url}}"], "path": ["this-does-not-exist"] }
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/health", "host": ["{{baseUrl}}"], "path": ["health"] }
           }
         }
       ]
     }
+
   ]
 }
