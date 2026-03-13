@@ -28,16 +28,11 @@ app.use(express.urlencoded({ extended: true }));
 app.set('view engine', 'ejs');
 app.set('views', join(__dirname, '..', 'views'));
 
-// Routes
+// API routes
 app.use('/api/v1', routes);
 
 // Error handling (order matters — 404 before global handler)
 app.use(notFoundHandler);
 app.use(errorHandler);
-
-// ─────────────────────────────────────────────────────────────────────────────
-app.listen(settings.port, () => {
-  console.log(`BudgetPal API running on port ${settings.port} [${settings.nodeEnv}]`);
-});
 
 export default app;
