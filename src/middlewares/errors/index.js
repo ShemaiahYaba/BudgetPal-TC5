@@ -19,39 +19,19 @@ import { handleServerError } from './serverError.js';
  *   errorHandler        — global handler, LAST (4-arg signature)
  */
 
-// ─── Shared helper ────────────────────────────────────────────────────────────
-
-const renderOrJson = (res, req, status, payload, errors) => {
-  if (req.accepts(['json', 'html']) === 'html') {
-    res.set('Cache-Control', 'no-store');
-    return res.status(status).render('response', {
-      title: payload.message,
-      method: req.method,
-      route: req.originalUrl,
-      statusCode: status,
-      timestamp: new Date().toISOString(),
-      data: payload,
-      errors: errors || undefined,
-    });
-  }
-
-  if (errors) payload.errors = errors;
-  res.status(status).json(payload);
-};
-
 // ─── Express Middleware ───────────────────────────────────────────────────────
 
-const notFoundHandler = (req, res) => {
-  renderOrJson(res, req, HTTP.NOT_FOUND, {
+const notFoundHandler = (_req, res) => {
+  res.status(HTTP.NOT_FOUND).json({
     success: false,
     message: ERR.ROUTE_NOT_FOUND,
     data: null,
   });
 };
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, _req, res, _next) => {
   if (err.isOperational) {
-    return renderOrJson(res, req, err.statusCode, {
+    return res.status(err.statusCode).json({
       success: false,
       message: err.message,
       data: null,
@@ -60,22 +40,23 @@ const errorHandler = (err, req, res, next) => {
 
   if (isValidationError(err)) {
     const { status, payload, errors } = handleValidationError(err);
-    return renderOrJson(res, req, status, payload, errors);
+    if (errors) payload.errors = errors;
+    return res.status(status).json(payload);
   }
 
   if (isOrmError(err)) {
     const { status, payload, errors } = handleOrmError(err);
-    return renderOrJson(res, req, status, payload, errors);
+    if (errors) payload.errors = errors;
+    return res.status(status).json(payload);
   }
 
   const { status, payload } = handleServerError(err);
-  renderOrJson(res, req, status, payload);
+  res.status(status).json(payload);
 };
 
 // ─── Barrel ──────────────────────────────────────────────────────────────────
 
 export {
-  renderOrJson,
   AppError,
   validate,
   isValidationError,

@@ -6,22 +6,8 @@ const router = Router();
  * Health Check
  * GET /api/v1/health
  */
-router.get('/health', (req, res) => {
-  const payload = { status: 'ok' };
-
-  if (req.accepts(['json', 'html']) === 'html') {
-    res.set('Cache-Control', 'no-store');
-    return res.render('response', {
-      title: 'Health Check',
-      method: req.method,
-      route: req.originalUrl,
-      statusCode: 200,
-      timestamp: new Date().toISOString(),
-      data: payload,
-    });
-  }
-
-  res.status(200).json({ success: true, message: 'BudgetPal API is running.', data: payload });
+router.get('/health', (_req, res) => {
+  res.status(200).json({ success: true, message: 'BudgetPal API is running.', data: { status: 'ok' } });
 });
 
 // ─── Module Routes (uncomment as built) ──────────────────────────────────────
