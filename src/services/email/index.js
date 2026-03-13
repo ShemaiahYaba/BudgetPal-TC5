@@ -3,6 +3,7 @@ import transporter from './transporter.js';
 import { welcomeTemplate } from './templates/welcome.js';
 import { passwordResetTemplate } from './templates/passwordReset.js';
 import { reportTemplate } from './templates/report.js';
+import { budgetAlertTemplate } from './templates/budgetAlert.js';
 
 /**
  * Core send function. All exported senders delegate here.
@@ -48,4 +49,21 @@ export const sendReportEmail = (user, report) => {
     subject: 'BudgetPal — Your Financial Report',
     html: reportTemplate(user, report),
   }).catch((err) => console.error('[Email] Report email failed:', err.message));
+};
+
+/**
+ * Budget alert email — fire-and-forget.
+ * @param {{ name: string, email: string }} user
+ * @param {{ category: object, spent: number, limit: number, percentage: number, status: string }} alert
+ */
+export const sendBudgetAlertEmail = (user, alert) => {
+  const subject = alert.status === 'exceeded'
+    ? `BudgetPal — Budget Exceeded: ${alert.category.name}`
+    : `BudgetPal — Budget Warning: ${alert.category.name}`;
+
+  sendEmail({
+    to: user.email,
+    subject,
+    html: budgetAlertTemplate(user, alert),
+  }).catch((err) => console.error('[Email] Budget alert email failed:', err.message));
 };

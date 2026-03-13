@@ -8,6 +8,7 @@ import morgan from 'morgan';
 import settings from './config/settings.js';
 import routes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middlewares/errors/index.js';
+import { startJobs } from './jobs/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -34,5 +35,8 @@ app.use('/api/v1', routes);
 // Error handling (order matters — 404 before global handler)
 app.use(notFoundHandler);
 app.use(errorHandler);
+
+// Background jobs
+startJobs();
 
 export default app;

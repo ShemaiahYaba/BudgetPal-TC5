@@ -2,6 +2,7 @@ import { Op } from 'sequelize';
 import { Transaction, Category } from '../models/index.js';
 import AppError from '../middlewares/errors/appError.js';
 import { HTTP, ERR } from '../constants/index.js';
+import { checkBudgetAlert } from './budgetAlertService.js';
 
 const findOwnedTransaction = async (userId, id) => {
   const transaction = await Transaction.findOne({
@@ -16,7 +17,9 @@ export const createTransaction = async (userId, { category_id, type, amount, des
   if (parseFloat(amount) <= 0) throw new AppError(ERR.AMOUNT_MUST_BE_POSITIVE, HTTP.BAD_REQUEST);
   if (new Date(date) > new Date()) throw new AppError(ERR.DATE_IN_FUTURE, HTTP.BAD_REQUEST);
 
-  return Transaction.create({ user_id: userId, category_id, type, amount, description, date });
+  const transaction = await Transaction.create({ user_id: userId, category_id, type, amount, description, date });
+  checkBudgetAlert(userId, category_id, date, type);
+  return transaction;
 };
 
 export const listTransactions = async (userId, query) => {
@@ -51,7 +54,11 @@ export const updateTransaction = async (userId, id, fields) => {
     throw new AppError(ERR.DATE_IN_FUTURE, HTTP.BAD_REQUEST);
   }
 
-  return transaction.update(fields);
+  const updated = await transaction.update(fields);
+  const effectiveDate = fields.date ?? transaction.date;
+  const effectiveType = fields.type ?? transaction.type;
+  checkBudgetAlert(userId, updated.category_id, effectiveDate, effectiveType);
+  return updated;
 };
 
 export const deleteTransaction = async (userId, id) => {
