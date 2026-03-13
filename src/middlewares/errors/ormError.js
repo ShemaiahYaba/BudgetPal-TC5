@@ -1,6 +1,4 @@
-'use strict';
-
-const { HTTP, ERR } = require('../../constants');
+import { HTTP, ERR } from '../../constants/index.js';
 
 const ORM_ERROR_NAMES = new Set([
   'SequelizeValidationError',
@@ -35,11 +33,10 @@ const handleOrmError = (err) => {
     };
   }
 
-  // SequelizeConnectionError / SequelizeDatabaseError → 500
   return {
     status: HTTP.INTERNAL_SERVER_ERROR,
     payload: { success: false, message: ERR.SERVER_ERROR, data: null },
   };
 };
 
-module.exports = { isOrmError, handleOrmError };
+export { isOrmError, handleOrmError };

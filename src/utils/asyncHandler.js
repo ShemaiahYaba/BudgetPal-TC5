@@ -1,13 +1,8 @@
-'use strict';
-
 /**
- * Wraps async route handlers to forward any rejected promise to next(err),
- * eliminating the need for try/catch in every controller.
- *
- * Usage:
- *   router.get('/', asyncHandler(async (req, res) => { ... }));
+ * Wraps async route handlers to forward rejected promises to next(err).
+ * Eliminates try/catch boilerplate in controllers.
  */
 const asyncHandler = (fn) => (req, res, next) =>
   Promise.resolve(fn(req, res, next)).catch(next);
 
-module.exports = asyncHandler;
+export default asyncHandler;

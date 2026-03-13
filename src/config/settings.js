@@ -1,6 +1,4 @@
-'use strict';
-
-require('dotenv').config();
+import 'dotenv/config';
 
 const settings = {
   port: parseInt(process.env.PORT, 10) || 5001,
@@ -29,4 +27,4 @@ const settings = {
   },
 };
 
-module.exports = settings;
+export default settings;

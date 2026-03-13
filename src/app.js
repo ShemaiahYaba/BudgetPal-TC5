@@ -1,36 +1,31 @@
-'use strict';
+import express from 'express';
+import helmet from 'helmet';
+import cors from 'cors';
+import morgan from 'morgan';
+import { fileURLToPath } from 'url';
+import { dirname, join } from 'path';
 
-const express = require('express');
-const helmet = require('helmet');
-const cors = require('cors');
-const morgan = require('morgan');
-const path = require('path');
+import router from './routes/index.js';
+import { errorHandler, notFoundHandler } from './middlewares/errors/index.js';
 
-const router = require('./routes/index');
-const { errorHandler, notFoundHandler } = require('./middlewares/errors/index');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const app = express();
 
-// Security & logging
 app.use(helmet());
 app.use(cors());
 app.use(morgan('dev'));
 
-// Body parsing
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// View engine — EJS (views/ at project root)
 app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, '..', 'views'));
+app.set('views', join(__dirname, '..', 'views'));
 
-// API routes
 app.use('/api/v1', router);
 
-// 404 catch-all (after all routes)
 app.use(notFoundHandler);
-
-// Global error handler (must be last, 4 args)
 app.use(errorHandler);
 
-module.exports = app;
+export default app;

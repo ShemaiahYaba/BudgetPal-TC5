@@ -1,5 +1,3 @@
-'use strict';
-
 const sendSuccess = (res, data, message = 'Success', statusCode = 200) =>
   res.status(statusCode).json({ success: true, message, data });
 
@@ -12,4 +10,4 @@ const sendError = (res, message, statusCode = 400, errors = null) => {
   return res.status(statusCode).json(payload);
 };
 
-module.exports = { sendSuccess, sendCreated, sendError };
+export { sendSuccess, sendCreated, sendError };

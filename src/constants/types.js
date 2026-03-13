@@ -1,5 +1,3 @@
-'use strict';
-
 const TRANSACTION_TYPES = Object.freeze({
   INCOME: 'income',
   EXPENSE: 'expense',
@@ -28,4 +26,4 @@ const HTTP = Object.freeze({
   INTERNAL_SERVER_ERROR: 500,
 });
 
-module.exports = { TRANSACTION_TYPES, CATEGORY_TYPES, BUDGET_STATUS, HTTP };
+export { TRANSACTION_TYPES, CATEGORY_TYPES, BUDGET_STATUS, HTTP };
