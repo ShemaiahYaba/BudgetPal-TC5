@@ -7,7 +7,7 @@ export default {
     database: settings.db.name,
     host: settings.db.host,
     port: settings.db.port,
-    dialect: "mysql",
+    dialect: 'mysql',
     logging: false,
   },
   production: {
@@ -16,7 +16,7 @@ export default {
     database: settings.db.name,
     host: settings.db.host,
     port: settings.db.port,
-    dialect: "mysql",
+    dialect: 'mysql',
     logging: false,
   },
 };

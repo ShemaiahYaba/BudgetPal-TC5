@@ -1,29 +1,22 @@
-const TRANSACTION_TYPES = Object.freeze({
+/**
+ * Domain type constants — single source of truth for all ENUM values.
+ * Use these in models, validators, and business logic instead of raw strings.
+ */
+
+const TRANSACTION_TYPES = {
   INCOME: 'income',
   EXPENSE: 'expense',
-});
+};
 
-const CATEGORY_TYPES = Object.freeze({
+const CATEGORY_TYPES = {
   INCOME: 'income',
   EXPENSE: 'expense',
-});
+};
 
-const BUDGET_STATUS = Object.freeze({
+const BUDGET_STATUS = {
   SAFE: 'safe',
   WARNING: 'warning',
   EXCEEDED: 'exceeded',
-});
+};
 
-const HTTP = Object.freeze({
-  OK: 200,
-  CREATED: 201,
-  NO_CONTENT: 204,
-  BAD_REQUEST: 400,
-  UNAUTHORIZED: 401,
-  FORBIDDEN: 403,
-  NOT_FOUND: 404,
-  CONFLICT: 409,
-  INTERNAL_SERVER_ERROR: 500,
-});
-
-export { TRANSACTION_TYPES, CATEGORY_TYPES, BUDGET_STATUS, HTTP };
+export { TRANSACTION_TYPES, CATEGORY_TYPES, BUDGET_STATUS };

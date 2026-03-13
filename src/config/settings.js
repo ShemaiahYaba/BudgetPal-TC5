@@ -1,6 +1,10 @@
 import 'dotenv/config';
 
-const settings = {
+/**
+ * Central settings / environment config.
+ * Every module reads from here — no module should call process.env directly.
+ */
+export default {
   port: parseInt(process.env.PORT, 10) || 5001,
   nodeEnv: process.env.NODE_ENV || 'development',
   isDev: (process.env.NODE_ENV || 'development') === 'development',
@@ -26,5 +30,3 @@ const settings = {
     from: process.env.MAIL_FROM,
   },
 };
-
-export default settings;

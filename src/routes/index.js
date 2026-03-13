@@ -2,24 +2,39 @@ import { Router } from 'express';
 
 const router = Router();
 
+/**
+ * Health Check
+ * GET /api/v1/health
+ */
 router.get('/health', (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: 'BudgetPal API is running.',
-    data: { status: 'ok' },
-  });
+  const payload = { status: 'ok' };
+
+  if (req.accepts(['json', 'html']) === 'html') {
+    res.set('Cache-Control', 'no-store');
+    return res.render('response', {
+      title: 'Health Check',
+      method: req.method,
+      route: req.originalUrl,
+      statusCode: 200,
+      timestamp: new Date().toISOString(),
+      data: payload,
+    });
+  }
+
+  res.status(200).json({ success: true, message: 'BudgetPal API is running.', data: payload });
 });
 
-// Sub-routers mounted here in later tasks:
+// ─── Module Routes (uncomment as built) ──────────────────────────────────────
 // import authRoutes from './authRoutes.js';
-// router.use('/auth', authRoutes);
 // import categoryRoutes from './categoryRoutes.js';
-// router.use('/categories', categoryRoutes);
 // import transactionRoutes from './transactionRoutes.js';
-// router.use('/transactions', transactionRoutes);
 // import budgetRoutes from './budgetRoutes.js';
-// router.use('/budgets', budgetRoutes);
 // import reportRoutes from './reportRoutes.js';
+
+// router.use('/auth', authRoutes);
+// router.use('/categories', categoryRoutes);
+// router.use('/transactions', transactionRoutes);
+// router.use('/budgets', budgetRoutes);
 // router.use('/reports', reportRoutes);
 
 export default router;
