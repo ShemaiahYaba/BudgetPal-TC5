@@ -1,4 +1,9 @@
 import { Router } from 'express';
+import authRoutes from './authRoutes.js';
+// import categoryRoutes from './categoryRoutes.js';
+// import transactionRoutes from './transactionRoutes.js';
+// import budgetRoutes from './budgetRoutes.js';
+// import reportRoutes from './reportRoutes.js';
 
 const router = Router();
 
@@ -10,14 +15,8 @@ router.get('/health', (_req, res) => {
   res.status(200).json({ success: true, message: 'BudgetPal API is running.', data: { status: 'ok' } });
 });
 
-// ─── Module Routes (uncomment as built) ──────────────────────────────────────
-// import authRoutes from './authRoutes.js';
-// import categoryRoutes from './categoryRoutes.js';
-// import transactionRoutes from './transactionRoutes.js';
-// import budgetRoutes from './budgetRoutes.js';
-// import reportRoutes from './reportRoutes.js';
-
-// router.use('/auth', authRoutes);
+// ─── Module Routes ────────────────────────────────────────────────────────────
+router.use('/auth', authRoutes);
 // router.use('/categories', categoryRoutes);
 // router.use('/transactions', transactionRoutes);
 // router.use('/budgets', budgetRoutes);
