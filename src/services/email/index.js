@@ -2,6 +2,7 @@ import settings from '../../config/settings.js';
 import transporter from './transporter.js';
 import { welcomeTemplate } from './templates/welcome.js';
 import { passwordResetTemplate } from './templates/passwordReset.js';
+import { reportTemplate } from './templates/report.js';
 
 /**
  * Core send function. All exported senders delegate here.
@@ -34,4 +35,17 @@ export const sendPasswordResetEmail = (user, resetUrl) => {
     subject: 'BudgetPal — Password Reset',
     html: passwordResetTemplate(user, resetUrl),
   }).catch((err) => console.error('[Email] Password reset email failed:', err.message));
+};
+
+/**
+ * Monthly summary report email — fire-and-forget.
+ * @param {{ name: string, email: string }} user
+ * @param {object} report
+ */
+export const sendReportEmail = (user, report) => {
+  sendEmail({
+    to: user.email,
+    subject: 'BudgetPal — Your Financial Report',
+    html: reportTemplate(user, report),
+  }).catch((err) => console.error('[Email] Report email failed:', err.message));
 };
