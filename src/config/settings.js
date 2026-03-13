@@ -22,6 +22,12 @@ export default {
     expiresIn: process.env.JWT_EXPIRES_IN || '7d',
   },
 
+  cors: {
+    allowedOrigins: (process.env.CORS_ORIGINS || 'http://localhost:3000,http://localhost:5001')
+      .split(',')
+      .map((o) => o.trim()),
+  },
+
   mail: {
     host: process.env.MAIL_HOST,
     port: parseInt(process.env.MAIL_PORT, 10) || 587,

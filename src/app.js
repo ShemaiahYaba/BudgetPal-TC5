@@ -2,12 +2,13 @@ import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
 import express from 'express';
 import helmet from 'helmet';
-import cors from 'cors';
 import morgan from 'morgan';
 
 import swaggerUi from 'swagger-ui-express';
 import settings from './config/settings.js';
 import { swaggerSpec } from './config/swagger.js';
+import corsMiddleware from './config/cors.js';
+import { morganStream } from './config/logger.js';
 import routes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middlewares/errors/index.js';
 import { startJobs } from './jobs/index.js';
@@ -20,8 +21,8 @@ const app = express();
 
 // Security & logging
 app.use(helmet());
-app.use(cors());
-app.use(morgan('dev'));
+app.use(corsMiddleware);
+app.use(morgan(settings.isDev ? 'dev' : 'combined', { stream: morganStream }));
 
 // Body parser
 app.use(express.json());
