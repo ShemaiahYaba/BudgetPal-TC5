@@ -12,6 +12,7 @@ const HTTP = {
   FORBIDDEN: 403,
   NOT_FOUND: 404,
   CONFLICT: 409,
+  TOO_MANY_REQUESTS: 429,
   SERVER_ERROR: 500,
 };
 
@@ -30,6 +31,7 @@ const ERR = {
   INVALID_CREDENTIALS: 'Invalid email or password.',
   EMAIL_IN_USE: 'An account with this email already exists.',
   INVALID_RESET_TOKEN: 'Invalid or expired password reset token.',
+  INVALID_REFRESH_TOKEN: 'Invalid or expired refresh token.',
   FORBIDDEN: 'You do not have permission to perform this action.',
 
   // Categories

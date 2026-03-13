@@ -31,13 +31,21 @@ export default (sequelize) => {
         type: DataTypes.DATE,
         allowNull: true,
       },
+      refresh_token: {
+        type: DataTypes.STRING(255),
+        allowNull: true,
+      },
+      refresh_expires: {
+        type: DataTypes.DATE,
+        allowNull: true,
+      },
     },
     {
       underscored: true,
       timestamps: true,
       tableName: 'users',
       defaultScope: {
-        attributes: { exclude: ['password', 'reset_token', 'reset_expires'] },
+        attributes: { exclude: ['password', 'reset_token', 'reset_expires', 'refresh_token', 'refresh_expires'] },
       },
       scopes: {
         withPassword: { attributes: {} },

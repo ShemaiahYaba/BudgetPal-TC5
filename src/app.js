@@ -8,7 +8,7 @@ import swaggerUi from 'swagger-ui-express';
 import settings from './config/settings.js';
 import { swaggerSpec } from './config/swagger.js';
 import corsMiddleware from './config/cors.js';
-import { morganStream } from './config/logger.js';
+import logger, { morganStream } from './config/logger.js';
 import routes from './routes/index.js';
 import { notFoundHandler, errorHandler } from './middlewares/errors/index.js';
 import { startJobs } from './jobs/index.js';
@@ -44,5 +44,10 @@ app.use(errorHandler);
 
 // Background jobs
 startJobs();
+
+// Start server
+app.listen(settings.port, () => {
+  logger.info(`BudgetPal API running on port ${settings.port} [${settings.nodeEnv}]`);
+});
 
 export default app;
