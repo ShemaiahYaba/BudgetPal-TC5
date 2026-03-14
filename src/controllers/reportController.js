@@ -18,6 +18,6 @@ export const monthly = asyncHandler(async (req, res) => {
 });
 
 export const emailSummary = asyncHandler(async (req, res) => {
-  await emailReport(req.user.id, req.query);
+  await emailReport(req.user.id, req.body);
   sendSuccess(res, null, 'Report sent to your email');
 });

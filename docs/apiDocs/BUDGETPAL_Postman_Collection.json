@@ -2,12 +2,13 @@
   "info": {
     "name": "BudgetPal API",
     "_postman_id": "budgetpal-api-v1",
-    "description": "Personal Finance Tracker REST API — Capstone 2026\n\n## Setup\n1. Set `baseUrl` collection variable to `http://localhost:5001/api/v1`\n2. Register or Login — the `token` variable is captured automatically\n3. All protected requests use `{{token}}` via Bearer Auth",
+    "description": "Personal Finance Tracker REST API — Capstone 2026\n\n## Setup\n1. Set `baseUrl` collection variable to `http://localhost:5001/api/v1`\n2. Register or Login — the `token` and `refreshToken` variables are captured automatically\n3. All protected requests use `{{token}}` via Bearer Auth",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
-    { "key": "baseUrl", "value": "http://localhost:5001/api/v1", "type": "string" },
-    { "key": "token",   "value": "",                              "type": "string" }
+    { "key": "baseUrl",      "value": "http://localhost:5001/api/v1", "type": "string" },
+    { "key": "token",        "value": "",                              "type": "string" },
+    { "key": "refreshToken", "value": "",                              "type": "string" }
   ],
   "auth": {
     "type": "bearer",
@@ -22,9 +23,10 @@
           "name": "Register",
           "event": [{ "listen": "test", "script": { "exec": [
             "const res = pm.response.json();",
-            "if (res.success && res.data && res.data.token) {",
-            "  pm.collectionVariables.set('token', res.data.token);",
-            "  console.log('Token saved');",
+            "if (res.success && res.data) {",
+            "  pm.collectionVariables.set('token', res.data.accessToken);",
+            "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+            "  console.log('Tokens saved');",
             "}"
           ], "type": "text/javascript" } }],
           "request": {
@@ -38,9 +40,10 @@
           "name": "Login",
           "event": [{ "listen": "test", "script": { "exec": [
             "const res = pm.response.json();",
-            "if (res.success && res.data && res.data.token) {",
-            "  pm.collectionVariables.set('token', res.data.token);",
-            "  console.log('Token saved');",
+            "if (res.success && res.data) {",
+            "  pm.collectionVariables.set('token', res.data.accessToken);",
+            "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+            "  console.log('Tokens saved');",
             "}"
           ], "type": "text/javascript" } }],
           "request": {
@@ -48,6 +51,24 @@
             "header": [{ "key": "Content-Type", "value": "application/json" }],
             "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@demo.com\",\n  \"password\": \"password123\"\n}" },
             "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "event": [{ "listen": "test", "script": { "exec": [
+            "const res = pm.response.json();",
+            "if (res.success && res.data) {",
+            "  pm.collectionVariables.set('token', res.data.accessToken);",
+            "  pm.collectionVariables.set('refreshToken', res.data.refreshToken);",
+            "  console.log('Tokens refreshed');",
+            "}"
+          ], "type": "text/javascript" } }],
+          "request": {
+            "method": "POST",
+            "auth": { "type": "noauth" },
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refresh_token\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
           }
         },
         {
@@ -242,14 +263,6 @@
           }
         },
         {
-          "name": "Current Month Status (all budgets)",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": { "raw": "{{baseUrl}}/budgets/status", "host": ["{{baseUrl}}"], "path": ["budgets", "status"] }
-          }
-        },
-        {
           "name": "Get Budget",
           "request": {
             "method": "GET",
@@ -324,7 +337,7 @@
           }
         },
         {
-          "name": "Monthly Trend (last 6 months)",
+          "name": "Monthly Trend",
           "request": {
             "method": "GET",
             "header": [],
@@ -342,16 +355,9 @@
           "name": "Email Report",
           "request": {
             "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/reports/email",
-              "host": ["{{baseUrl}}"],
-              "path": ["reports", "email"],
-              "query": [
-                { "key": "month", "value": "3",    "disabled": true },
-                { "key": "year",  "value": "2026", "disabled": true }
-              ]
-            }
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"month\": 3,\n  \"year\": 2026\n}" },
+            "url": { "raw": "{{baseUrl}}/reports/email", "host": ["{{baseUrl}}"], "path": ["reports", "email"] }
           }
         }
       ]
