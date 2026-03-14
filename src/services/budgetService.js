@@ -31,14 +31,37 @@ export const createBudget = async (userId, { category_id, month, year, limit_amo
 
 export const listBudgets = async (userId, query) => {
   const where = { user_id: userId };
-  if (query.month) where.month = query.month;
-  if (query.year) where.year = query.year;
+  if (query.month) where.month = parseInt(query.month);
+  if (query.year)  where.year  = parseInt(query.year);
 
-  return Budget.findAll({
+  const budgets = await Budget.findAll({
     where,
     include: [{ model: Category, as: 'category' }],
     order: [['year', 'DESC'], ['month', 'DESC']],
   });
+
+  // Attach the spent amount for each budget from actual transactions
+  const pad = (n) => String(n).padStart(2, '0');
+  await Promise.all(
+    budgets.map(async (b) => {
+      const spent = await Transaction.sum('amount', {
+        where: {
+          user_id:     userId,
+          category_id: b.category_id,
+          type:        'expense',
+          date: {
+            [Op.between]: [
+              `${b.year}-${pad(b.month)}-01`,
+              `${b.year}-${pad(b.month)}-31`,
+            ],
+          },
+        },
+      }) || 0;
+      b.dataValues.spent = parseFloat(spent);
+    })
+  );
+
+  return budgets;
 };
 
 export const getBudget = async (userId, id) => {
@@ -58,14 +81,16 @@ export const deleteBudget = async (userId, id) => {
 export const getBudgetStatus = async (userId, id) => {
   const budget = await findOwnedBudget(userId, id);
 
+  const pad = (n) => String(n).padStart(2, '0');
   const spent = await Transaction.sum('amount', {
     where: {
-      user_id: userId,
+      user_id:     userId,
       category_id: budget.category_id,
+      type:        'expense',
       date: {
         [Op.between]: [
-          `${budget.year}-${String(budget.month).padStart(2, '0')}-01`,
-          `${budget.year}-${String(budget.month).padStart(2, '0')}-31`,
+          `${budget.year}-${pad(budget.month)}-01`,
+          `${budget.year}-${pad(budget.month)}-31`,
         ],
       },
     },

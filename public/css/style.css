@@ -1,0 +1,21 @@
+/* Supplements Tailwind CDN with styles that can't be expressed as utilities */
+
+/* Input / select focus ring */
+input:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: #10b981 !important;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15) !important;
+}
+
+/* Table row hover — can't target td from tr:hover without JIT arbitrary variants */
+tbody tr:hover td {
+  background-color: #f8fafc;
+}
+
+/* Active nav link (set by nav.js) */
+#nav-links a.active {
+  background-color: #f1f5f9;
+  color: #1e293b;
+}

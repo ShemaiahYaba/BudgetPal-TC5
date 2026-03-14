@@ -1,0 +1,76 @@
+<%- include('partials/head', { title: 'Reports' }) %>
+<%- include('partials/nav') %>
+
+<div class="max-w-5xl mx-auto px-5">
+  <div class="pt-7 pb-5 flex items-center justify-between">
+    <div>
+      <div class="text-2xl font-bold">Reports</div>
+      <div id="period-label" class="text-slate-500 text-sm mt-0.5"></div>
+    </div>
+    <div class="flex gap-2 items-center">
+      <select id="month-select" class="w-auto px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white outline-none"></select>
+      <select id="year-select"  class="w-auto px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white outline-none"></select>
+      <button id="btn-email" class="px-3 py-2 border border-slate-200 text-slate-600 rounded-lg text-sm bg-white hover:bg-slate-50 transition-colors cursor-pointer">Email Report</button>
+    </div>
+  </div>
+
+  <!-- Summary cards -->
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Total Income</div>
+      <div class="text-3xl font-bold text-emerald-600" id="total-income">—</div>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Total Expenses</div>
+      <div class="text-3xl font-bold text-red-600" id="total-expenses">—</div>
+    </div>
+    <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+      <div class="text-xs font-semibold text-slate-500 uppercase tracking-wide mb-1">Net</div>
+      <div class="text-3xl font-bold" id="net">—</div>
+    </div>
+  </div>
+
+  <!-- Spending by category -->
+  <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm mb-6">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-base font-semibold">Spending by Category</h2>
+      <select id="f-type" class="w-auto px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white outline-none">
+        <option value="">All types</option>
+        <option value="expense" selected>Expenses only</option>
+        <option value="income">Income only</option>
+      </select>
+    </div>
+    <div id="category-list"></div>
+    <p id="no-category" class="hidden text-slate-500 text-sm text-center py-4">No transactions found for this period.</p>
+  </div>
+
+  <!-- Monthly trend -->
+  <div class="bg-white border border-slate-200 rounded-xl p-6 shadow-sm">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="text-base font-semibold">Monthly Trend</h2>
+      <select id="trend-year" class="w-auto px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white outline-none"></select>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full border-collapse text-sm">
+        <thead>
+          <tr>
+            <th class="text-left text-xs font-semibold text-slate-500 uppercase tracking-wide px-3 py-2.5 border-b border-slate-200">Month</th>
+            <th class="text-right text-xs font-semibold text-slate-500 uppercase tracking-wide px-3 py-2.5 border-b border-slate-200">Income</th>
+            <th class="text-right text-xs font-semibold text-slate-500 uppercase tracking-wide px-3 py-2.5 border-b border-slate-200">Expenses</th>
+            <th class="text-right text-xs font-semibold text-slate-500 uppercase tracking-wide px-3 py-2.5 border-b border-slate-200">Net</th>
+          </tr>
+        </thead>
+        <tbody id="monthly-body"></tbody>
+      </table>
+      <p id="no-monthly" class="hidden text-slate-500 px-3 py-5 text-center text-sm">No data available.</p>
+    </div>
+  </div>
+</div>
+
+<!-- Email toast -->
+<div id="email-toast" class="hidden fixed bottom-6 right-6 text-white px-5 py-3 rounded-lg text-sm shadow-lg z-50 bg-emerald-800">
+  Report emailed successfully!
+</div>
+
+<script src="/js/reports.js"></script>
+</body></html>

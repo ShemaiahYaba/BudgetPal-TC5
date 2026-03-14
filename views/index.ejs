@@ -1,12 +1,19 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>BudgetPal</title>
-</head>
-<body>
-  <h1>BudgetPal API</h1>
-  <p>API is running. See <a href="/api/v1/health">/api/v1/health</a>.</p>
-</body>
-</html>
+<%- include('partials/head', { title: 'Welcome' }) %>
+<div class="min-h-screen flex items-center justify-center p-5">
+  <div class="text-center max-w-lg">
+    <div class="text-5xl mb-4">💰</div>
+    <h1 class="text-4xl font-extrabold mb-3">BudgetPal</h1>
+    <p class="text-slate-500 text-lg mb-8 leading-relaxed">
+      Track your income and expenses, set monthly budgets, and get spending insights — all in one place.
+    </p>
+    <div class="flex gap-3 justify-center flex-wrap">
+      <a href="/register" class="inline-flex items-center px-7 py-3 bg-emerald-500 text-white rounded-lg text-base font-medium hover:bg-emerald-600 transition-colors">Get Started</a>
+      <a href="/login"    class="inline-flex items-center px-7 py-3 border border-slate-200 text-slate-600 rounded-lg text-base font-medium bg-white hover:bg-slate-50 transition-colors">Login</a>
+    </div>
+    <p class="mt-6 text-xs text-slate-400">
+      API docs at <a href="/api/v1/docs" class="text-emerald-500 hover:underline">/api/v1/docs</a>
+    </p>
+  </div>
+</div>
+<script src="/js/index.js"></script>
+</body></html>
