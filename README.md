@@ -29,12 +29,12 @@ A RESTful API for tracking personal income and expenses, managing category-based
 | Framework | Express.js v4 |
 | Database | MySQL 8 |
 | ORM | Sequelize v6 |
-| Auth | JWT + bcrypt |
+| Auth | JWT (access + refresh tokens) + bcrypt |
 | Validation | express-validator |
 | Email | Nodemailer |
 | Scheduling | node-cron |
 | Docs | Swagger UI (`/api/v1/docs`) |
-| Views | EJS |
+| Views | EJS + Tailwind CSS |
 | Logging | Morgan |
 
 ---
@@ -100,8 +100,13 @@ DB_NAME=budgetpal_db
 DB_USER=root
 DB_PASSWORD=your_mysql_password
 
+# Access token — short-lived (15 minutes)
 JWT_SECRET=your_super_secret_jwt_key_minimum_32_chars
-JWT_EXPIRES_IN=7d
+JWT_EXPIRES_IN=15m
+
+# Refresh token — long-lived (7 days), must differ from JWT_SECRET
+JWT_REFRESH_SECRET=your_refresh_secret_minimum_32_chars
+JWT_REFRESH_EXPIRES_IN=7d
 
 MAIL_HOST=smtp.gmail.com
 MAIL_PORT=587
@@ -109,6 +114,10 @@ MAIL_USER=your_email@gmail.com
 MAIL_PASS=your_app_password
 MAIL_FROM="BudgetPal <no-reply@budgetpal.com>"
 
+# Comma-separated allowed CORS origins
+CORS_ORIGINS=http://localhost:3000,http://localhost:5001
+
+# Used in password reset emails
 FRONTEND_URL=http://localhost:3000
 ```
 
@@ -117,8 +126,11 @@ FRONTEND_URL=http://localhost:3000
 | `PORT` | Yes | Server port (default 5001) |
 | `DB_*` | Yes | MySQL connection details |
 | `JWT_SECRET` | Yes | Min 32 chars — generate with `openssl rand -base64 64` |
-| `JWT_EXPIRES_IN` | Yes | e.g. `7d`, `24h` |
+| `JWT_EXPIRES_IN` | Yes | Access token TTL, e.g. `15m`, `1h` |
+| `JWT_REFRESH_SECRET` | Yes | Min 32 chars — must differ from `JWT_SECRET` |
+| `JWT_REFRESH_EXPIRES_IN` | Yes | Refresh token TTL, e.g. `7d` |
 | `MAIL_*` | Yes | Required for email flows |
+| `CORS_ORIGINS` | No | Defaults to localhost origins |
 | `FRONTEND_URL` | No | Used in password reset link (default `http://localhost:3000`) |
 
 > `.env` is gitignored. Never commit it.
@@ -171,9 +183,9 @@ npm start      # Production
 
 Base URL: `http://localhost:5001/api/v1`
 
-All protected routes require:
+Protected routes require:
 ```
-Authorization: Bearer <JWT>
+Authorization: Bearer <accessToken>
 ```
 
 All responses follow:
@@ -181,12 +193,15 @@ All responses follow:
 { "success": true | false, "message": "...", "data": {} | [] | null }
 ```
 
+> **Auth column:** ❌ = public (no token needed) · ✅ = requires Bearer token
+
 ### Endpoints
 
 | Method | Endpoint | Auth | Description |
 |--------|----------|------|-------------|
 | POST | /auth/register | ❌ | Register + welcome email |
-| POST | /auth/login | ❌ | Login |
+| POST | /auth/login | ❌ | Login — returns `accessToken` + `refreshToken` |
+| POST | /auth/refresh | ❌ | Exchange refresh token for new access token |
 | POST | /auth/logout | ✅ | Logout |
 | POST | /auth/forgot-password | ❌ | Request password reset email |
 | POST | /auth/reset-password | ❌ | Reset password via token |
@@ -203,7 +218,6 @@ All responses follow:
 | DELETE | /transactions/:id | ✅ | Delete transaction |
 | GET | /budgets | ✅ | List budgets (month/year filter) |
 | POST | /budgets | ✅ | Create monthly budget (expense categories only) |
-| GET | /budgets/status | ✅ | Current month budget overview |
 | GET | /budgets/:id | ✅ | Get budget with live spent/remaining/status |
 | GET | /budgets/:id/status | ✅ | Live status for a specific budget |
 | PUT | /budgets/:id | ✅ | Update budget limit |
@@ -212,8 +226,9 @@ All responses follow:
 | GET | /reports/by-category | ✅ | Spending grouped by category |
 | GET | /reports/monthly | ✅ | Month-by-month trend (last 6 or full year) |
 | POST | /reports/email | ✅ | Email summary report to user |
+| GET | /health | ❌ | Health check |
 
-**Total: 27 endpoints** (including `/health`)
+**Total: 28 endpoints**
 
 ---
 
@@ -280,7 +295,8 @@ BudgetPal-TC5/
 │   │   ├── categoryRoutes.js
 │   │   ├── transactionRoutes.js
 │   │   ├── budgetRoutes.js
-│   │   └── reportRoutes.js
+│   │   ├── reportRoutes.js
+│   │   └── viewRoutes.js             # EJS page routes
 │   ├── services/
 │   │   ├── authService.js
 │   │   ├── categoryService.js
@@ -299,6 +315,38 @@ BudgetPal-TC5/
 │   └── utils/
 │       ├── apiResponse.js            # sendSuccess, sendCreated, sendNoContent
 │       └── asyncHandler.js
+├── public/
+│   ├── css/
+│   │   └── style.css                 # Minimal overrides (Tailwind handles the rest)
+│   └── js/
+│       ├── api.js                    # Shared fetch helpers + token management
+│       ├── nav.js                    # Active link + logout
+│       ├── index.js
+│       ├── login.js
+│       ├── register.js
+│       ├── dashboard.js
+│       ├── transactions.js
+│       ├── budgets.js
+│       ├── reports.js
+│       ├── categories.js
+│       ├── profile.js
+│       ├── forgot-password.js
+│       └── reset-password.js
+├── views/
+│   ├── partials/
+│   │   ├── head.ejs                  # Tailwind CDN + shared meta
+│   │   └── nav.ejs                   # Sidebar navigation
+│   ├── index.ejs                     # Landing / home
+│   ├── login.ejs
+│   ├── register.ejs
+│   ├── dashboard.ejs
+│   ├── transactions.ejs
+│   ├── budgets.ejs
+│   ├── reports.ejs
+│   ├── categories.ejs
+│   ├── profile.ejs
+│   ├── forgot-password.ejs
+│   └── reset-password.ejs
 ├── migrations/                       # .cjs — run in FK order
 │   ├── 20260101000001-create-users-table.cjs
 │   ├── 20260101000002-create-categories-table.cjs
@@ -309,16 +357,14 @@ BudgetPal-TC5/
 │   ├── 20260101000002-seed-categories.cjs
 │   ├── 20260101000003-seed-transactions.cjs
 │   └── 20260101000004-seed-budgets.cjs
-├── views/                            # EJS templates
-│   └── index.ejs
-├── docs/                             # Project documentation
+├── docs/
 │   └── apiDocs/
 │       └── BUDGETPAL_Postman_Collection.json
 ├── .sequelizerc
 ├── .env                              # Gitignored
 ├── .env.example
 ├── package.json
-└── BUDGETPAL_README.md
+└── README.md
 ```
 
 ---
