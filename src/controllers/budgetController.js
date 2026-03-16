@@ -1,4 +1,4 @@
-import { createBudget, listBudgets, getBudget, updateBudget, deleteBudget, getBudgetStatus } from '../services/budgetService.js';
+import { createBudget, listBudgets, getBudget, updateBudget, deleteBudget, getBudgetStatus, getBudgetOverview } from '../services/budgetService.js';
 import { sendSuccess, sendCreated, sendNoContent } from '../utils/apiResponse.js';
 import asyncHandler from '../utils/asyncHandler.js';
 
@@ -25,6 +25,11 @@ export const update = asyncHandler(async (req, res) => {
 export const remove = asyncHandler(async (req, res) => {
   await deleteBudget(req.user.id, req.params.id);
   sendNoContent(res);
+});
+
+export const overview = asyncHandler(async (req, res) => {
+  const data = await getBudgetOverview(req.user.id);
+  sendSuccess(res, data, 'Budget overview retrieved successfully');
 });
 
 export const status = asyncHandler(async (req, res) => {

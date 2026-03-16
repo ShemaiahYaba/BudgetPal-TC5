@@ -211,15 +211,16 @@ All responses follow:
 | GET | /categories/:id | ✅ | Get category |
 | PUT | /categories/:id | ✅ | Update category |
 | DELETE | /categories/:id | ✅ | Delete category (blocked if has transactions) |
-| GET | /transactions | ✅ | List transactions (type / category / date filters) |
+| GET | /transactions | ✅ | List transactions (type / category / month+year / date range / pagination) |
 | POST | /transactions | ✅ | Create transaction + budget alert check |
 | GET | /transactions/:id | ✅ | Get transaction |
 | PUT | /transactions/:id | ✅ | Update transaction + budget alert re-check |
 | DELETE | /transactions/:id | ✅ | Delete transaction |
 | GET | /budgets | ✅ | List budgets (month/year filter) |
 | POST | /budgets | ✅ | Create monthly budget (expense categories only) |
-| GET | /budgets/:id | ✅ | Get budget with live spent/remaining/status |
-| GET | /budgets/:id/status | ✅ | Live status for a specific budget |
+| GET | /budgets/status | ✅ | Current month overview — all budgets with live spent/remaining/status |
+| GET | /budgets/:id | ✅ | Get budget |
+| GET | /budgets/:id/status | ✅ | Live spent/remaining/status for a specific budget |
 | PUT | /budgets/:id | ✅ | Update budget limit |
 | DELETE | /budgets/:id | ✅ | Delete budget |
 | GET | /reports/summary | ✅ | Income vs expenses for a period |
@@ -228,7 +229,7 @@ All responses follow:
 | POST | /reports/email | ✅ | Email summary report to user |
 | GET | /health | ❌ | Health check |
 
-**Total: 28 endpoints**
+**Total: 29 endpoints**
 
 ---
 
@@ -391,7 +392,8 @@ BudgetPal-TC5/
 | `POST /auth/forgot-password` | Password reset link | Token expires in 1 hour |
 | Transaction creates/updates → spending ≥ 80% | Budget warning alert | Per category, fire-and-forget |
 | Transaction creates/updates → spending ≥ 100% | Budget exceeded alert | Per category, fire-and-forget |
-| Daily cron at 08:00 | Sweep all current-month budgets | Alerts where ≥ 80% |
+| Daily cron at 08:00 | Sweep all current-month budgets | Alerts where ≥ 80% or 100% (once per threshold per budget) |
+| 1st of month cron at 08:00 | Monthly summary email to all users | Covers the previous calendar month |
 | `POST /reports/email` | On-demand summary report | Uses same period filters as `/reports/summary` |
 
 ---

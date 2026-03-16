@@ -1,6 +1,6 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
-import { create, list, show, update, remove, status } from '../controllers/budgetController.js';
+import { create, list, show, update, remove, status, overview } from '../controllers/budgetController.js';
 import { authMiddleware } from '../middlewares/authMiddleware.js';
 import { validate } from '../middlewares/errors/validationError.js';
 
@@ -21,6 +21,7 @@ router.use(authMiddleware);
 
 router.post('/', createValidation, validate, create);
 router.get('/', list);
+router.get('/status', overview);
 router.get('/:id', show);
 router.get('/:id/status', status);
 router.put('/:id', updateValidation, validate, update);

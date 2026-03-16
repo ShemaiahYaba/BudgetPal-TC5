@@ -27,17 +27,40 @@ export const listTransactions = async (userId, query) => {
 
   if (query.category_id) where.category_id = query.category_id;
   if (query.type) where.type = query.type;
+
   if (query.start_date || query.end_date) {
     where.date = {};
     if (query.start_date) where.date[Op.gte] = query.start_date;
     if (query.end_date) where.date[Op.lte] = query.end_date;
+  } else if (query.month || query.year) {
+    const now = new Date();
+    const month = parseInt(query.month) || now.getMonth() + 1;
+    const year = parseInt(query.year) || now.getFullYear();
+    const pad = (n) => String(n).padStart(2, '0');
+    where.date = { [Op.between]: [`${year}-${pad(month)}-01`, `${year}-${pad(month)}-31`] };
   }
 
-  return Transaction.findAll({
+  const page = Math.max(1, parseInt(query.page) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(query.limit) || 20));
+  const offset = (page - 1) * limit;
+
+  const { count, rows } = await Transaction.findAndCountAll({
     where,
     include: [{ model: Category, as: 'category' }],
     order: [['date', 'DESC']],
+    limit,
+    offset,
   });
+
+  return {
+    data: rows,
+    pagination: {
+      total: count,
+      page,
+      limit,
+      total_pages: Math.ceil(count / limit),
+    },
+  };
 };
 
 export const getTransaction = async (userId, id) => {

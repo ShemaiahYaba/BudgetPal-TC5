@@ -39,10 +39,12 @@ export const checkBudgetAlert = async (userId, categoryId, transactionDate, tran
   const limit = parseFloat(budget.limit_amount);
   const percentage = limit > 0 ? (spent / limit) * 100 : 0;
 
-  if (percentage >= 100) {
+  if (percentage >= 100 && !budget.alert_100_sent) {
     sendBudgetAlertEmail(user, { category, spent, limit, percentage, status: 'exceeded' });
-  } else if (percentage >= 80) {
+    await budget.update({ alert_100_sent: true });
+  } else if (percentage >= 80 && !budget.alert_80_sent) {
     sendBudgetAlertEmail(user, { category, spent, limit, percentage, status: 'warning' });
+    await budget.update({ alert_80_sent: true });
   }
 };
 
@@ -67,10 +69,12 @@ export const runDailyBudgetAlertSweep = async () => {
     const limit = parseFloat(budget.limit_amount);
     const percentage = limit > 0 ? (spent / limit) * 100 : 0;
 
-    if (percentage >= 100) {
+    if (percentage >= 100 && !budget.alert_100_sent) {
       sendBudgetAlertEmail(budget.user, { category: budget.category, spent, limit, percentage, status: 'exceeded' });
-    } else if (percentage >= 80) {
+      await budget.update({ alert_100_sent: true });
+    } else if (percentage >= 80 && !budget.alert_80_sent) {
       sendBudgetAlertEmail(budget.user, { category: budget.category, spent, limit, percentage, status: 'warning' });
+      await budget.update({ alert_80_sent: true });
     }
   }
 

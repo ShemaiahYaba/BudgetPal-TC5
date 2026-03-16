@@ -13,28 +13,33 @@ const BADGE = {
   expense: 'inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-red-100 text-red-800',
 };
 
-const load = async () => {
+let currentPage = 1;
+
+const load = async (page = 1) => {
+  currentPage = page;
   const type  = document.getElementById('f-type').value;
   const cat   = document.getElementById('f-category').value;
   const start = document.getElementById('f-start').value;
   const end   = document.getElementById('f-end').value;
 
-  let qs = '';
+  let qs = `page=${page}&limit=20`;
   if (type)  qs += `&type=${type}`;
   if (cat)   qs += `&category_id=${cat}`;
   if (start) qs += `&start_date=${start}`;
   if (end)   qs += `&end_date=${end}`;
 
-  const res  = await get(`/transactions?${qs.slice(1)}`);
+  const res  = await get(`/transactions?${qs}`);
   const body = document.getElementById('tx-body');
   const none = document.getElementById('no-tx');
   body.innerHTML = '';
 
   if (!res?.success || !res.data.length) {
     none.classList.remove('hidden');
+    renderPagination(null);
     return;
   }
   none.classList.add('hidden');
+  renderPagination(res.pagination);
 
   res.data.forEach(tx => {
     const amtClass = tx.type === 'income' ? 'text-right text-emerald-600 font-semibold' : 'text-right text-red-600 font-semibold';
@@ -118,6 +123,17 @@ const removeTx = async (id) => {
   load();
 };
 
+const renderPagination = (p) => {
+  const el = document.getElementById('pagination');
+  if (!el) return;
+  if (!p || p.total_pages <= 1) { el.innerHTML = ''; return; }
+  let html = `<span class="text-xs text-slate-500">Page ${p.page} of ${p.total_pages} &middot; ${p.total} records</span><div class="flex gap-1">`;
+  if (p.page > 1)            html += `<button class="px-2 py-1 text-xs border border-slate-200 rounded bg-white hover:bg-slate-50 cursor-pointer" data-page="${p.page - 1}">Prev</button>`;
+  if (p.page < p.total_pages) html += `<button class="px-2 py-1 text-xs border border-slate-200 rounded bg-white hover:bg-slate-50 cursor-pointer" data-page="${p.page + 1}">Next</button>`;
+  html += '</div>';
+  el.innerHTML = html;
+};
+
 const clearFilters = () => {
   ['f-type', 'f-start', 'f-end'].forEach(id => document.getElementById(id).value = '');
   document.getElementById('f-category').value = '';
@@ -125,8 +141,13 @@ const clearFilters = () => {
 };
 
 document.getElementById('btn-add').addEventListener('click', () => openModal());
-document.getElementById('btn-filter').addEventListener('click', load);
+document.getElementById('btn-filter').addEventListener('click', () => load(1));
 document.getElementById('btn-clear').addEventListener('click', clearFilters);
+
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('#pagination button[data-page]');
+  if (btn) load(parseInt(btn.dataset.page));
+});
 document.getElementById('btn-modal-cancel').addEventListener('click', closeModal);
 document.getElementById('m-save').addEventListener('click', save);
 

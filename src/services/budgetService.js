@@ -78,6 +78,45 @@ export const deleteBudget = async (userId, id) => {
   await budget.destroy();
 };
 
+export const getBudgetOverview = async (userId) => {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+
+  const budgets = await Budget.findAll({
+    where: { user_id: userId, month, year },
+    include: [{ model: Category, as: 'category' }],
+    order: [[{ model: Category, as: 'category' }, 'name', 'ASC']],
+  });
+
+  const pad = (n) => String(n).padStart(2, '0');
+  const result = await Promise.all(
+    budgets.map(async (b) => {
+      const spent = parseFloat(
+        (await Transaction.sum('amount', {
+          where: {
+            user_id: userId,
+            category_id: b.category_id,
+            type: 'expense',
+            date: { [Op.between]: [`${year}-${pad(month)}-01`, `${year}-${pad(month)}-31`] },
+          },
+        })) || 0
+      );
+      const limit = parseFloat(b.limit_amount);
+      const remaining = limit - spent;
+      const percent_used = limit > 0 ? Math.round((spent / limit) * 100) : 0;
+      let status;
+      if (spent >= limit) status = 'exceeded';
+      else if (percent_used >= 80) status = 'warning';
+      else status = 'safe';
+
+      return { budget: b, spent, remaining, percent_used, status };
+    })
+  );
+
+  return { month, year, budgets: result };
+};
+
 export const getBudgetStatus = async (userId, id) => {
   const budget = await findOwnedBudget(userId, id);
 

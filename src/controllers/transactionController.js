@@ -8,8 +8,8 @@ export const create = asyncHandler(async (req, res) => {
 });
 
 export const list = asyncHandler(async (req, res) => {
-  const transactions = await listTransactions(req.user.id, req.query);
-  sendSuccess(res, transactions, 'Transactions retrieved successfully');
+  const { data, pagination } = await listTransactions(req.user.id, req.query);
+  sendSuccess(res, data, 'Transactions retrieved successfully', pagination);
 });
 
 export const show = asyncHandler(async (req, res) => {

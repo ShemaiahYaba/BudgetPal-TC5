@@ -180,10 +180,14 @@
               "host": ["{{baseUrl}}"],
               "path": ["transactions"],
               "query": [
+                { "key": "page",        "value": "1",          "disabled": true },
+                { "key": "limit",       "value": "20",         "disabled": true },
                 { "key": "type",        "value": "",           "disabled": true },
                 { "key": "category_id", "value": "",           "disabled": true },
-                { "key": "start_date",  "value": "2026-01-01", "disabled": true },
-                { "key": "end_date",    "value": "2026-03-31", "disabled": true }
+                { "key": "month",       "value": "3",          "disabled": true },
+                { "key": "year",        "value": "2026",       "disabled": true },
+                { "key": "start_date",  "value": "",           "disabled": true },
+                { "key": "end_date",    "value": "",           "disabled": true }
               ]
             }
           }
@@ -263,6 +267,14 @@
           }
         },
         {
+          "name": "Current Month Overview (all budgets)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": { "raw": "{{baseUrl}}/budgets/status", "host": ["{{baseUrl}}"], "path": ["budgets", "status"] }
+          }
+        },
+        {
           "name": "Get Budget",
           "request": {
             "method": "GET",
@@ -271,7 +283,7 @@
           }
         },
         {
-          "name": "Get Budget Status",
+          "name": "Get Budget Status (single)",
           "request": {
             "method": "GET",
             "header": [],
